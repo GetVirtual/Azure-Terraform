@@ -96,3 +96,35 @@ resource "azurerm_virtual_machine" "vm-hyperv" {
     project = "${var.costcenter}"
   }
 }
+
+
+resource "azurerm_virtual_machine_extension" "vm-hyperv-dsc" {
+  name                 = "DSC"
+  location             = "${azurerm_resource_group.rg.location}"
+  resource_group_name  = "${azurerm_resource_group.rg.name}"
+  virtual_machine_name = "${var.vm-hyperv}"
+  publisher            = "Microsoft.Powershell"
+  type                 = "DSC"
+  type_handler_version = "2.76"
+  depends_on           = ["azurerm_virtual_machine.vm-hyperv"]
+
+  settings = <<SETTINGS
+        {
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.76",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "configuration": {
+                        "url": "https://github.com/GetVirtual/Terraform-Templates/raw/master/Demo-AzureMigrate/DSC/HyperV.zip",
+                        "script": "HyperV.ps1",
+                        "function": "HyperV"
+                    }
+                }
+            }
+        }
+    SETTINGS
+
+  
+}

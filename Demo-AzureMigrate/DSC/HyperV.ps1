@@ -1,4 +1,4 @@
-Configuration IIS {
+Configuration HyperV {
 
     #Import-DscResource -ModuleName 'PsDesiredStateConfiguration'
     Import-DscResource -ModuleName 'xHyper-V'
