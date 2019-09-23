@@ -89,7 +89,8 @@ resource "azurerm_virtual_machine" "vm-hyperv" {
   }
 
   os_profile_windows_config {
-
+    provision_vm_agent = true
+    
   }
 
   tags {
