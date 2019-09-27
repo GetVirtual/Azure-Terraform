@@ -2,18 +2,6 @@ provider "azurerm" {
     subscription_id = "180b44f4-1d54-4817-87ef-22ca8f374006"
 }
 
-
-# West Europe Vars
-
-resource "azurerm_resource_group" "rg-we" {
-  name     = "TerraFormLBDemo-WE"
-  location = "West Europe"
-
-  tags {
-provider "azurerm" { 
-    subscription_id = "180b44f4-1d54-4817-87ef-22ca8f374006"
-}
-
 variable "vm-we-1" {
   default = "WestEuropeWeb1"  
 }
@@ -143,7 +131,7 @@ resource "azurerm_virtual_machine" "vm-we-1" {
   storage_image_reference {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
-    sku       = "2019-Datacenter"
+    sku       = "2016-Datacenter"
     version   = "latest"
   }
 
@@ -232,4 +220,41 @@ resource "azurerm_resource_group" "rg-tm" {
 }
 
 resource "azurerm_traffic_manager_profile" "tm-profile" {
-p
+  name                = "TM"
+  resource_group_name = "${azurerm_resource_group.rg-tm.name}"
+
+  traffic_routing_method = "Weighted"
+
+  dns_config {
+    relative_name = "jlo-tm"
+    ttl           = 100
+  }
+
+  monitor_config {
+    protocol = "tcp"
+    port     = 3389
+    #path     = "/"
+  }
+
+  tags {
+    project = "${var.costcenter}"
+  }
+}
+
+resource "azurerm_traffic_manager_endpoint" "tm-endpoint-we" {
+  name                = "WE-Endpoint"
+  resource_group_name = "${azurerm_resource_group.rg-tm.name}"
+  profile_name        = "${azurerm_traffic_manager_profile.tm-profile.name}"
+  target              = "${azurerm_public_ip.lb-we-publicip.domain_name_label}.westeurope.cloudapp.azure.com"
+  type                = "externalEndpoints"
+  weight              = 100
+}
+
+resource "azurerm_traffic_manager_endpoint" "tm-endpoint-ne" {
+  name                = "NE-Endpoint"
+  resource_group_name = "${azurerm_resource_group.rg-tm.name}"
+  profile_name        = "${azurerm_traffic_manager_profile.tm-profile.name}"
+  target              = "${azurerm_public_ip.lb-ne-publicip.domain_name_label}.northeurope.cloudapp.azure.com"
+  type                = "externalEndpoints"
+  weight              = 200
+}
