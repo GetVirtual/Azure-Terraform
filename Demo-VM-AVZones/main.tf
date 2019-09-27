@@ -21,7 +21,7 @@ resource "azurerm_resource_group" "rg-we" {
   name     = "TerraFormLBDemo-WE"
   location = "West Europe"
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -32,7 +32,7 @@ resource "azurerm_virtual_network" "vnet-we" {
   location            = "${azurerm_resource_group.rg-we.location}"
   address_space       = ["10.1.0.0/16"]
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -50,6 +50,7 @@ resource "azurerm_public_ip" "lb-we-publicip" {
   location                     = "${azurerm_resource_group.rg-we.location}"
   resource_group_name          = "${azurerm_resource_group.rg-we.name}"
   public_ip_address_allocation = "static"
+  sku                          = "standard"
   domain_name_label            = "jlo-we-lb"
 }
 
@@ -57,6 +58,8 @@ resource "azurerm_lb" "lb-we" {
   name                = "lb-we"
   location            = "${azurerm_resource_group.rg-we.location}"
   resource_group_name = "${azurerm_resource_group.rg-we.name}"
+  sku                 = "standard"
+  
 
   frontend_ip_configuration {
     name                 = "PublicIPAddress"
@@ -78,6 +81,7 @@ resource "azurerm_lb_rule" "lb-we-rule" {
   frontend_port                  = 3389
   backend_port                   = 3389
   frontend_ip_configuration_name = "PublicIPAddress"
+  
 
   backend_address_pool_id       = "${azurerm_lb_backend_address_pool.lb-we-pool.id}"
   probe_id                      = "${azurerm_lb_probe.lb-we-probe.id}"
@@ -92,17 +96,6 @@ resource "azurerm_lb_probe" "lb-we-probe" {
 
 # VMs West Europe
 
-resource "azurerm_availability_set" "avset-we" {
-  name                = "northeurope-availabilityset"
-  location            = "${azurerm_resource_group.rg-we.location}"
-  resource_group_name = "${azurerm_resource_group.rg-we.name}"
-  managed             = true
-
-  tags {
-    project = "${var.costcenter}"
-  }
-}
-
 resource "azurerm_network_interface" "nic-vm-we-1" {
   name                = "${var.vm-we-1}-nic"
   location            = "${azurerm_resource_group.rg-we.location}"
@@ -115,7 +108,7 @@ resource "azurerm_network_interface" "nic-vm-we-1" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.lb-we-pool.id}"]
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -126,7 +119,7 @@ resource "azurerm_virtual_machine" "vm-we-1" {
   resource_group_name   = "${azurerm_resource_group.rg-we.name}"
   network_interface_ids = ["${azurerm_network_interface.nic-vm-we-1.id}"]
   vm_size               = "Standard_B2ms"
-  availability_set_id   = "${azurerm_availability_set.avset-we.id}"
+  
 
   storage_image_reference {
     publisher = "MicrosoftWindowsServer"
@@ -152,7 +145,9 @@ resource "azurerm_virtual_machine" "vm-we-1" {
 
   }
 
-  tags {
+  zones = ["1"]
+  
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -169,7 +164,7 @@ resource "azurerm_network_interface" "nic-vm-we-2" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.lb-we-pool.id}"]
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -180,7 +175,7 @@ resource "azurerm_virtual_machine" "vm-we-2" {
   resource_group_name   = "${azurerm_resource_group.rg-we.name}"
   network_interface_ids = ["${azurerm_network_interface.nic-vm-we-2.id}"]
   vm_size               = "Standard_B2ms"
-  availability_set_id   = "${azurerm_availability_set.avset-we.id}"
+  
 
   storage_image_reference {
     publisher = "MicrosoftWindowsServer"
@@ -206,55 +201,11 @@ resource "azurerm_virtual_machine" "vm-we-2" {
 
   }
 
-  tags {
+  zones = ["2"]
+
+  tags = {
     project = "${var.costcenter}"
   }
 }
 
 
-# Traffic Manager
-
-resource "azurerm_resource_group" "rg-tm" {
-  name     = "TerraFormLBDemo-TM"
-  location = "West Europe"
-}
-
-resource "azurerm_traffic_manager_profile" "tm-profile" {
-  name                = "TM"
-  resource_group_name = "${azurerm_resource_group.rg-tm.name}"
-
-  traffic_routing_method = "Weighted"
-
-  dns_config {
-    relative_name = "jlo-tm"
-    ttl           = 100
-  }
-
-  monitor_config {
-    protocol = "tcp"
-    port     = 3389
-    #path     = "/"
-  }
-
-  tags {
-    project = "${var.costcenter}"
-  }
-}
-
-resource "azurerm_traffic_manager_endpoint" "tm-endpoint-we" {
-  name                = "WE-Endpoint"
-  resource_group_name = "${azurerm_resource_group.rg-tm.name}"
-  profile_name        = "${azurerm_traffic_manager_profile.tm-profile.name}"
-  target              = "${azurerm_public_ip.lb-we-publicip.domain_name_label}.westeurope.cloudapp.azure.com"
-  type                = "externalEndpoints"
-  weight              = 100
-}
-
-resource "azurerm_traffic_manager_endpoint" "tm-endpoint-ne" {
-  name                = "NE-Endpoint"
-  resource_group_name = "${azurerm_resource_group.rg-tm.name}"
-  profile_name        = "${azurerm_traffic_manager_profile.tm-profile.name}"
-  target              = "${azurerm_public_ip.lb-ne-publicip.domain_name_label}.northeurope.cloudapp.azure.com"
-  type                = "externalEndpoints"
-  weight              = 200
-}

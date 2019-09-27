@@ -298,7 +298,7 @@ resource "azurerm_lb_probe" "lb-we-probe" {
 # VMs West Europe
 
 resource "azurerm_availability_set" "avset-we" {
-  name                = "northeurope-availabilityset"
+  name                = "westeurope-availabilityset"
   location            = "${azurerm_resource_group.rg-we.location}"
   resource_group_name = "${azurerm_resource_group.rg-we.name}"
   managed             = true
