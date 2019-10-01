@@ -53,11 +53,11 @@ resource "azurerm_subnet" "subnet-ne" {
 
 # Load Balancer North Europe
 resource "azurerm_public_ip" "lb-ne-publicip" {
-  name                         = "lb-ne-publicip"
-  location                     = "${azurerm_resource_group.rg-ne.location}"
-  resource_group_name          = "${azurerm_resource_group.rg-ne.name}"
-  public_ip_address_allocation = "static"
-  domain_name_label            = "jlo-ne-lb"
+  name                          = "lb-ne-publicip"
+  location                      = "${azurerm_resource_group.rg-ne.location}"
+  resource_group_name           = "${azurerm_resource_group.rg-ne.name}"
+  allocation_method             = "Static"
+  domain_name_label             = "jlo-ne-lb"
 }
 
 resource "azurerm_lb" "lb-ne" {
@@ -251,11 +251,11 @@ resource "azurerm_subnet" "subnet-we" {
 
 # Load Balancer West Europe
 resource "azurerm_public_ip" "lb-we-publicip" {
-  name                         = "lb-we-publicip"
-  location                     = "${azurerm_resource_group.rg-we.location}"
-  resource_group_name          = "${azurerm_resource_group.rg-we.name}"
-  public_ip_address_allocation = "static"
-  domain_name_label            = "jlo-we-lb"
+  name                          = "lb-we-publicip"
+  location                      = "${azurerm_resource_group.rg-we.location}"
+  resource_group_name           = "${azurerm_resource_group.rg-we.name}"
+  allocation_method             = "Static"
+  domain_name_label             = "jlo-we-lb"
 }
 
 resource "azurerm_lb" "lb-we" {
