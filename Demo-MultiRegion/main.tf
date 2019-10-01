@@ -27,7 +27,7 @@ resource "azurerm_resource_group" "rg-ne" {
   name     = "TerraFormLBDemo-NE"
   location = "North Europe"
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -38,7 +38,7 @@ resource "azurerm_virtual_network" "vnet-ne" {
   location            = "${azurerm_resource_group.rg-ne.location}"
   address_space       = ["10.0.0.0/16"]
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -105,7 +105,7 @@ resource "azurerm_availability_set" "avset-ne" {
   resource_group_name = "${azurerm_resource_group.rg-ne.name}"
   managed             = true
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -122,7 +122,7 @@ resource "azurerm_network_interface" "nic-vm-ne-1" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.lb-ne-pool.id}"]
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -159,7 +159,7 @@ resource "azurerm_virtual_machine" "vm-ne-1" {
 
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -176,7 +176,7 @@ resource "azurerm_network_interface" "nic-vm-ne-2" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.lb-ne-pool.id}"]
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -213,7 +213,7 @@ resource "azurerm_virtual_machine" "vm-ne-2" {
 
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -226,7 +226,7 @@ resource "azurerm_resource_group" "rg-we" {
   name     = "TerraFormLBDemo-WE"
   location = "West Europe"
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -237,7 +237,7 @@ resource "azurerm_virtual_network" "vnet-we" {
   location            = "${azurerm_resource_group.rg-we.location}"
   address_space       = ["10.1.0.0/16"]
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -303,7 +303,7 @@ resource "azurerm_availability_set" "avset-we" {
   resource_group_name = "${azurerm_resource_group.rg-we.name}"
   managed             = true
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -320,7 +320,7 @@ resource "azurerm_network_interface" "nic-vm-we-1" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.lb-we-pool.id}"]
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -357,7 +357,7 @@ resource "azurerm_virtual_machine" "vm-we-1" {
 
   }
 
-  tags {
+  tags  = {
     project = "${var.costcenter}"
   }
 }
@@ -374,7 +374,7 @@ resource "azurerm_network_interface" "nic-vm-we-2" {
     load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.lb-we-pool.id}"]
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -411,7 +411,7 @@ resource "azurerm_virtual_machine" "vm-we-2" {
 
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
@@ -441,7 +441,7 @@ resource "azurerm_traffic_manager_profile" "tm-profile" {
     #path     = "/"
   }
 
-  tags {
+  tags = {
     project = "${var.costcenter}"
   }
 }
