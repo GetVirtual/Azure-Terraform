@@ -3,3 +3,7 @@
 
 # Terraform State 
 terraform.tfstate*
+.terraform.tfstate*
+
+# Local vars
+terraform.tfvars
